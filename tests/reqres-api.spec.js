@@ -12,11 +12,12 @@ const apiHeaders = {
 let userId = '';
 let createdName = '';
 let createdJob = '';
+let createResponseBody = null;
 
 test.describe('Reqres API automation', () => {
   test.describe.configure({ mode: 'serial' });
 
-  test('API_TC_01 - Create user and store userId', async ({ request }) => {
+  test('TC_API_01 - Create a user and validate response status code', async ({ request }) => {
     createdName = 'Yash';
     createdJob = 'QA Engineer';
 
@@ -29,16 +30,20 @@ test.describe('Reqres API automation', () => {
     });
 
     expect(createResponse.status()).toBe(201);
-    const createBody = await createResponse.json();
+    createResponseBody = await createResponse.json();
 
-    expect(createBody.name).toBe(createdName);
-    expect(createBody.job).toBe(createdJob);
-    expect(createBody.id).toBeTruthy();
-
-    userId = String(createBody.id);
+    expect(createResponseBody.name).toBe(createdName);
+    expect(createResponseBody.job).toBe(createdJob);
+    expect(createResponseBody.id).toBeTruthy();
   });
 
-  test('API_TC_02 - Get created user details and validate', async ({ request }) => {
+  test('TC_API_02 - Fetch and store userId after user creation', async () => {
+    expect(createResponseBody).toBeTruthy();
+    userId = String(createResponseBody.id);
+    expect(userId).toBeTruthy();
+  });
+
+  test('TC_API_03 - Get created user details and validate', async ({ request }) => {
     expect(userId).toBeTruthy();
 
     const getResponse = await request.get(`${apiBaseUrl}/users/${userId}`, {
@@ -54,7 +59,7 @@ test.describe('Reqres API automation', () => {
     }
   });
 
-  test('API_TC_03 - Update user name and validate', async ({ request }) => {
+  test("TC_API_04 - Update user's name and validate the update", async ({ request }) => {
     expect(userId).toBeTruthy();
     const updatedName = 'Yash Updated';
 
@@ -77,3 +82,7 @@ test.describe('Reqres API automation', () => {
 
 //npm run test:api // to run api tests 
 // npm run report:alt // to view api test report
+
+// run below both commands to run all tests and view report in one go
+// npm test
+// npm run report:alt

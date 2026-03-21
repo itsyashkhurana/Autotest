@@ -14,6 +14,15 @@ const expectedPublisher = "O'Reilly Media";
 
 test.describe.configure({ mode: 'serial' });
 
+test.afterEach(async ({ page }, testInfo) => {
+  const screenshotPath = testInfo.outputPath('final-state.png');
+  await page.screenshot({ path: screenshotPath, fullPage: true });
+  await testInfo.attach('final-state-screenshot', {
+    path: screenshotPath,
+    contentType: 'image/png',
+  });
+});
+
 async function openBookStorePage(page) {
   await page.goto(homeUrl, { waitUntil: 'domcontentloaded' });
   await page.setViewportSize({ width: 1440, height: 900 });
