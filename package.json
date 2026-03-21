@@ -5,7 +5,10 @@
   "scripts": {
     "test": "playwright test",
     "test:headed": "playwright test --headed --project=chromium",
-    "test:ui": "playwright test --ui"
+    "test:ui": "playwright test --ui",
+    "report": "playwright show-report",
+    "report:alt": "playwright show-report --host 127.0.0.1 --port 9324",
+    "test:report": "playwright test && playwright show-report --host 127.0.0.1 --port 9324"
   },
   "repository": {
     "type": "git",

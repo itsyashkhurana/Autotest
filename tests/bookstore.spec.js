@@ -107,3 +107,7 @@ test('TC_UI_06 - Click logout and verify user is logged out', async ({ page }) =
   await expect(page).toHaveURL(/\/login\/?$/);
   await expect(page.getByRole('button', { name: 'Login' })).toBeVisible();
 });
+
+
+//npm run test:headed -- --grep "TC_UI_06" // to run specific test case 
+//npm run report:alt     // when port conflict happens so then use alternate port

@@ -26,6 +26,32 @@ Or run headed mode:
 npm run test:headed
 ```
 
+Open Playwright HTML report:
+
+```bash
+npm run report
+```
+
+If default report port is busy:
+
+```bash
+npm run report:alt
+```
+
+## Evidence in Report
+
+Each test case is configured to capture:
+
+- Screenshot: `on`
+- Video: `on`
+- Trace: `on-first-retry`
+
+Run tests and open report:
+
+```bash
+npm run test:report
+```
+
 ## Assignment Flow Implemented
 
 The test cases in `tests/bookstore.spec.js` perform:
