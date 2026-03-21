@@ -30,19 +30,20 @@ npm run test:headed
 
 The test cases in `tests/bookstore.spec.js` perform:
 
-1. Open `https://demoqa.com/books`
-2. Click **Login** and sign in with:
+1. Open `https://demoqa.com/`
+2. Navigate to **Book Store Application**
+3. Click **Login** and sign in with:
    - Username: `Yash`
    - Password: `Test@123`
-3. Validate logged-in username and logout button
-4. Click **Book Store** menu
-5. Click search field and search `Learning JavaScript Design Patterns`
-6. Validate the search result contains the book
-7. Open `https://demoqa.com/books?search=9781449331818`
-8. Validate details:
+4. Validate logged-in username and logout button
+5. Click **Book Store** menu
+6. Click search field and search `Learning JavaScript Design Patterns`
+7. Validate the search result contains the book
+8. Open `https://demoqa.com/books?search=9781449331818`
+9. Validate details:
    - Title: `Learning JavaScript Design Patterns`
    - Author: `Addy Osmani`
    - Publisher: `O'Reilly Media`
-9. Write Title, Author, and Publisher to:
+10. Write Title, Author, and Publisher to:
    - `output/book-details.txt`
-10. Click **Log out**
+11. Click **Log out** and validate redirect to `https://demoqa.com/login`

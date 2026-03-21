@@ -6,6 +6,7 @@ import path from 'node:path';
 const username = 'Yash';
 const password = 'Test@123';
 const bookName = 'Learning JavaScript Design Patterns';
+const homeUrl = 'https://demoqa.com/';
 const booksUrl = 'https://demoqa.com/books';
 const detailsUrl = 'https://demoqa.com/books?search=9781449331818';
 const expectedAuthor = 'Addy Osmani';
@@ -14,8 +15,12 @@ const expectedPublisher = "O'Reilly Media";
 test.describe.configure({ mode: 'serial' });
 
 async function openBookStorePage(page) {
-  await page.goto(booksUrl, { waitUntil: 'domcontentloaded' });
+  await page.goto(homeUrl, { waitUntil: 'domcontentloaded' });
   await page.setViewportSize({ width: 1440, height: 900 });
+  const bookStoreCard = page.getByRole('heading', { name: 'Book Store Application' });
+  await expect(bookStoreCard).toBeVisible();
+  await bookStoreCard.scrollIntoViewIfNeeded();
+  await bookStoreCard.click();
   await expect(page).toHaveURL(/\/books\/?$/);
   await expect(page.getByPlaceholder('Type to search')).toBeVisible();
 }
@@ -46,7 +51,7 @@ async function goToBookDetailsUrl(page) {
   await expect(page).toHaveURL(/\/books\?search=9781449331818/);
 }
 
-test('TC_UI_01 - Open Books Store page', async ({ page }) => {
+test('TC_UI_01 - Navigate to DemoQA and open Book Store Application', async ({ page }) => {
   await openBookStorePage(page);
 });
 
@@ -56,26 +61,25 @@ test('TC_UI_02 - Validate username and logout button after login', async ({ page
   await expect(page.getByRole('button', { name: /^Log\s?out$/i })).toBeVisible();
 });
 
-test('TC_UI_03 - Click Book Store button after login', async ({ page }) => {
+test('TC_UI_03 - Click on Book Store button', async ({ page }) => {
   await loginToBookStore(page);
   await goToBookStoreMenu(page);
   await expect(page).toHaveURL(/\/books/);
-  // await expect(page.getByPlaceholder('Type to search')).toBeVisible();
+  await expect(page.getByPlaceholder('Type to search')).toBeVisible();
 });
 
-test('TC_UI_04 - Search target book then open details URL', async ({ page }) => {
-  await page.goto(booksUrl, { waitUntil: 'domcontentloaded' });
-  await expect(page).toHaveURL(/\/books\/?$/);
+test('TC_UI_04 - Search Learning JavaScript Design Patterns and open details page', async ({ page }) => {
+  await loginToBookStore(page);
+  await goToBookStoreMenu(page);
   const searchInput = page.locator('#searchBox');
   await searchInput.click();
   await searchInput.fill(bookName);
   await expect(searchInput).toHaveValue(bookName);
-  await page.goto(detailsUrl, { waitUntil: 'domcontentloaded' });
-  await expect(page).toHaveURL(/\/books\?search=9781449331818/);
+  await goToBookDetailsUrl(page);
   await expect(page.locator('#title-wrapper #userName-value')).toHaveText(bookName);
 });
 
-test('TC_UI_05 - Open details URL and print title author publisher to file', async ({ page }) => {
+test('TC_UI_05 - Print Title, Author and Publisher into a file', async ({ page }) => {
   await loginToBookStore(page);
   await goToBookDetailsUrl(page);
 
@@ -96,9 +100,10 @@ test('TC_UI_05 - Open details URL and print title author publisher to file', asy
 
 test('TC_UI_06 - Click logout and verify user is logged out', async ({ page }) => {
   await loginToBookStore(page);
-  await goToBookDetailsUrl(page);
-  const logoutButton = page.getByRole('button', { name: /^Log\s?out$/i });
-  await expect(logoutButton).toBeVisible(); 
+  await expect(page.locator('#userName-value')).toHaveText(username);
+  const logoutButton = page.getByRole('button', { name: /^Log\s*out$/i });
+  await expect(logoutButton).toBeVisible();
   await logoutButton.click();
+  await expect(page).toHaveURL(/\/login\/?$/);
   await expect(page.getByRole('button', { name: 'Login' })).toBeVisible();
 });
