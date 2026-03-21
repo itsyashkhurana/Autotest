@@ -1,0 +1,104 @@
+// @ts-check
+import { test, expect } from '@playwright/test';
+import { mkdir, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+
+const username = 'Yash';
+const password = 'Test@123';
+const bookName = 'Learning JavaScript Design Patterns';
+const booksUrl = 'https://demoqa.com/books';
+const detailsUrl = 'https://demoqa.com/books?search=9781449331818';
+const expectedAuthor = 'Addy Osmani';
+const expectedPublisher = "O'Reilly Media";
+
+test.describe.configure({ mode: 'serial' });
+
+async function openBookStorePage(page) {
+  await page.goto(booksUrl, { waitUntil: 'domcontentloaded' });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await expect(page).toHaveURL(/\/books\/?$/);
+  await expect(page.getByPlaceholder('Type to search')).toBeVisible();
+}
+
+async function loginToBookStore(page) {
+  await openBookStorePage(page);
+  const loginButton = page.getByRole('button', { name: 'Login' });
+  await expect(loginButton).toBeVisible();
+  await loginButton.click();
+  await page.locator('#userName').fill(username);
+  await page.locator('#password').fill(password);
+  await page.locator('#login').click();
+}
+
+async function goToBookStoreMenu(page) {
+  await page.getByRole('listitem').filter({ hasText: /^Book Store$/ }).click();
+}
+
+async function searchBook(page) {
+  await goToBookStoreMenu(page);
+  const searchInput = page.locator('#searchBox');
+  await searchInput.click();
+  await searchInput.fill(bookName);
+}
+
+async function goToBookDetailsUrl(page) {
+  await page.goto(detailsUrl, { waitUntil: 'domcontentloaded' });
+  await expect(page).toHaveURL(/\/books\?search=9781449331818/);
+}
+
+test('TC_UI_01 - Open Books Store page', async ({ page }) => {
+  await openBookStorePage(page);
+});
+
+test('TC_UI_02 - Validate username and logout button after login', async ({ page }) => {
+  await loginToBookStore(page);
+  await expect(page.locator('#userName-value')).toHaveText(username);
+  await expect(page.getByRole('button', { name: /^Log\s?out$/i })).toBeVisible();
+});
+
+test('TC_UI_03 - Click Book Store button after login', async ({ page }) => {
+  await loginToBookStore(page);
+  await goToBookStoreMenu(page);
+  await expect(page).toHaveURL(/\/books/);
+  // await expect(page.getByPlaceholder('Type to search')).toBeVisible();
+});
+
+test('TC_UI_04 - Search target book then open details URL', async ({ page }) => {
+  await page.goto(booksUrl, { waitUntil: 'domcontentloaded' });
+  await expect(page).toHaveURL(/\/books\/?$/);
+  const searchInput = page.locator('#searchBox');
+  await searchInput.click();
+  await searchInput.fill(bookName);
+  await expect(searchInput).toHaveValue(bookName);
+  await page.goto(detailsUrl, { waitUntil: 'domcontentloaded' });
+  await expect(page).toHaveURL(/\/books\?search=9781449331818/);
+  await expect(page.locator('#title-wrapper #userName-value')).toHaveText(bookName);
+});
+
+test('TC_UI_05 - Open details URL and print title author publisher to file', async ({ page }) => {
+  await loginToBookStore(page);
+  await goToBookDetailsUrl(page);
+
+  const title = (await page.locator('#title-wrapper #userName-value').innerText()).trim();
+  const author = (await page.locator('#author-wrapper #userName-value').innerText()).trim();
+  const publisher = (await page.locator('#publisher-wrapper #userName-value').innerText()).trim();
+  await expect(title).toBe(bookName);
+  await expect(author).toBe(expectedAuthor);
+  await expect(publisher).toBe(expectedPublisher);
+
+  const outputDir = path.resolve(process.cwd(), 'output');
+  const outputFile = path.join(outputDir, 'book-details.txt');
+  const output = `Title: ${title}\nAuthor: ${author}\nPublisher: ${publisher}\n`;
+
+  await mkdir(outputDir, { recursive: true });
+  await writeFile(outputFile, output, 'utf8');
+});
+
+test('TC_UI_06 - Click logout and verify user is logged out', async ({ page }) => {
+  await loginToBookStore(page);
+  await goToBookDetailsUrl(page);
+  const logoutButton = page.getByRole('button', { name: /^Log\s?out$/i });
+  await expect(logoutButton).toBeVisible(); 
+  await logoutButton.click();
+  await expect(page.getByRole('button', { name: 'Login' })).toBeVisible();
+});
