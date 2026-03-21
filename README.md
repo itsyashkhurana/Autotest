@@ -52,6 +52,23 @@ Run tests and open report:
 npm run test:report
 ```
 
+## API Test Setup (Reqres)
+
+1. Copy `.env.example` to `.env`
+2. Put your Reqres API key in `REQRES_API_KEY`
+
+Example:
+
+```bash
+cp .env.example .env
+```
+
+Run API tests:
+
+```bash
+npm run test:api
+```
+
 ## Assignment Flow Implemented
 
 The test cases in `tests/bookstore.spec.js` perform:

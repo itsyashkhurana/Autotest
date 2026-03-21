@@ -4,6 +4,8 @@
   "main": "index.js",
   "scripts": {
     "test": "playwright test",
+    "test:api": "playwright test tests/reqres-api.spec.js --project=chromium",
+    "test:api:report": "playwright test tests/reqres-api.spec.js --project=chromium && playwright show-report --host 127.0.0.1 --port 9324",
     "test:headed": "playwright test --headed --project=chromium",
     "test:ui": "playwright test --ui",
     "report": "playwright show-report",
@@ -24,6 +26,7 @@
   "description": "",
   "devDependencies": {
     "@playwright/test": "^1.58.2",
-    "@types/node": "^25.5.0"
+    "@types/node": "^25.5.0",
+    "dotenv": "^17.3.1"
   }
 }
