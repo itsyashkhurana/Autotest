@@ -2,6 +2,8 @@
 
 This project contains an end-to-end Playwright test for the DemoQA Book Store flow.
 
+## test cases link https://docs.google.com/spreadsheets/d/1Tco18AtsyJnjv-PTmQ70DQ85wqGVjJEPePU7C2Ulx08/edit?gid=623949909#gid=623949909
+
 ## Prerequisites
 
 - Node.js 18+ (recommended)
